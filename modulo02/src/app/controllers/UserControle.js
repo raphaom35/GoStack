@@ -13,7 +13,7 @@ class UserControle {
         .min(6),
     });
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ erro: 'Validation falis' });
+      return res.status(400).json({ erro: 'Validation fails' });
     }
     const userExist = await User.findOne({ where: { email: req.body.email } });
     if (userExist) {
@@ -35,7 +35,11 @@ class UserControle {
           oldPassword ? field.required() : field
         ),
       confirmPassword: Yup.string().when('password', (password, field) =>
-        password ? field.required().oneOf([Yup.Ref('password')]) : field
+        password
+          ? field
+              .required()
+              .oneOf([Yup.ref('password'), null], 'Passwords must match')
+          : field
       ),
     });
     if (!(await schema.isValid(req.body))) {
