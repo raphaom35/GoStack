@@ -4,4 +4,4 @@ docker start database
 
 yarn sequelize db:migrate
 yarn sequelize migration:create --name=create-files
-
+yarn sequelize migration:create --name=appointments
