@@ -20,7 +20,7 @@ class UserControle {
       return res.status(400).json({ erro: 'User already exits' });
     }
     const { id, name, email, provider } = await User.create(req.body);
-
+    console.log("entrou")
     return res.json({ id, name, email, provider });
   }
 
