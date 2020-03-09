@@ -15,11 +15,15 @@ class SessionControle {
       return res.status(400).json({ erro: 'Validation fails' });
     }
     const { email, password } = req.body;
+
     const user = await User.findOne({ where: { email } });
+
     if (!user) {
       return res.status(401).json({ erro: 'User not exits' });
     }
+
     if (!(await user.checkPassword(password))) {
+
       return res.status(401).json({ erro: 'Password error' });
     }
     const { id, name } = user;
