@@ -102,6 +102,10 @@ class AppointmentsControle {
       return res
         .status(401)
         .json({ error: "You don't have permissin to cancel this appointment" });
+    } else {
+      appointment.canceled_at = new Date();
+      await appointment.save();
+      return res.json(appointment);
     }
     const dateWhitSub = subHours(appointment.date, 2);
     if (isBefore(dateWhitSub, new Date())) {
@@ -109,9 +113,7 @@ class AppointmentsControle {
         .status(401)
         .json({ error: 'You can omy cancel appointments 2 hours in advanced' });
     }
-    appointment.canceled_at = new Date();
-    await appointment.save();
-    return res.json(appointment);
+    const date = new Date();
   }
 }
 export default new AppointmentsControle();
