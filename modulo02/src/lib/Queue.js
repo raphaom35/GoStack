@@ -1,22 +1,22 @@
 import Bee from 'bee-queue';
-import CancelationMail  from '../app/jobs/CancelationMail';
+import CancelationMail from '../app/jobs/CancelationMail';
 import redisConfig from '../config/redis';
 import { JsonWebTokenError } from 'jsonwebtoken';
 
-const jobs =[CancelationMail];
+const jobs = [CancelationMail];
 class Queue {
-  constructor(){
+  constructor() {
     this.queues = {};
 
     this.init();
   }
-  init(){
+  init() {
     jobs.forEach(({ key, handle }) => {
       this.queues[key] = {
         bee: new Bee(key, {
           redis: redisConfig,
-      }),
-      handle,
+        }),
+        handle,
       };
     });
   }
@@ -25,11 +25,14 @@ class Queue {
     return this.queues[queue].bee.createJob(job).save();
   }
 
-  processQueue(){
+  processQueue() {
     jobs.forEach(job => {
       const { bee, handle } = this.queues[job.key];
-      bee.process(handle);
+      bee.on('failed', this.handleFailure).process(handle);
     });
+  }
+  handleFailure(job, err) {
+    console.log(`Queue ${jos.queue.name} :FAILED `, err);
   }
 }
 

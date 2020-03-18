@@ -16,7 +16,7 @@ class AppointmentsControle {
       order: ['date'],
       limit: 20,
       offset: (page - 1) * 20,
-      attributes: ['id', 'date'],
+      attributes: ['id', 'date', 'past', 'cancelable'],
       include: [
         {
           model: User,
@@ -99,18 +99,18 @@ class AppointmentsControle {
   }
 
   async delete(req, res) {
-    const appointment = await Appointments.findByPk(req.params.id,{
+    const appointment = await Appointments.findByPk(req.params.id, {
       include: [
         {
           model: User,
           as: 'provider',
-          attributes: ['name','email'],
+          attributes: ['name', 'email'],
         },
         {
           model: User,
           as: 'user',
           attributes: ['name'],
-        }
+        },
       ],
     });
     if (appointment.user_id !== req.userId) {
@@ -120,7 +120,7 @@ class AppointmentsControle {
     } else {
       appointment.canceled_at = new Date();
       await appointment.save();
-      await Queue.add(CancelamentMail.key,{
+      await Queue.add(CancelamentMail.key, {
         appointment,
       });
       return res.json(appointment);
