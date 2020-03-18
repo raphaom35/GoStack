@@ -5,6 +5,8 @@ import Appointments from '../models/Appointments';
 import User from '../models/user';
 import File from '../models/File';
 import Notification from '../schemas/Notification';
+import CancelamentMail from '../jobs/CancelationMail';
+import Queue from '../../lib/Queue';
 
 class AppointmentsControle {
   async index(req, res) {
@@ -97,7 +99,20 @@ class AppointmentsControle {
   }
 
   async delete(req, res) {
-    const appointment = await Appointments.findByPk(req.params.id);
+    const appointment = await Appointments.findByPk(req.params.id,{
+      include: [
+        {
+          model: User,
+          as: 'provider',
+          attributes: ['name','email'],
+        },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['name'],
+        }
+      ],
+    });
     if (appointment.user_id !== req.userId) {
       return res
         .status(401)
@@ -105,6 +120,9 @@ class AppointmentsControle {
     } else {
       appointment.canceled_at = new Date();
       await appointment.save();
+      await Queue.add(CancelamentMail.key,{
+        appointment,
+      });
       return res.json(appointment);
     }
     const dateWhitSub = subHours(appointment.date, 2);
