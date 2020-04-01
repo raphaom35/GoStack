@@ -1,9 +1,11 @@
+require('dotenv/config');
+
 module.exports = {
   dialect: 'postgres',
-  host: 'drona.db.elephantsql.com',
-  username: 'olmgytjc',
-  password: 'U-D4wWJMwz0DoEham8wv4e5e46Jp8RT5',
-  database: 'olmgytjc',
+  host: process.env.DB_HOST,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
   define: {
     timestamps: true,
     underscored: true,

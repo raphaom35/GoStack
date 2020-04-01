@@ -22,10 +22,11 @@ class DataBase {
   }
 
   mongo() {
-    this.mongoConnection = mongoose.connect(
-      'mongodb+srv://admin:31994@cluster0-n2ppb.mongodb.net/test?retryWrites=true&w=majority',
-      { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
-    );
+    this.mongoConnection = mongoose.connect(process.env.MONGO_URL, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+    });
   }
 }
 export default new DataBase();
